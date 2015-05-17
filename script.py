@@ -1,40 +1,33 @@
-paths = []
-garbage_folder
+path_list = []
+file_types = []
+file_size_in_MB =
+mbs_in_bytes = 1024 * 1024
+
+marked_files = []
+files_to_delete = []
+files_to_move = []
+
+move_files_to_destination = []
 
 import os
+import shutil
 
-# Because I assumed you were going to put multiple paths in the paths variable, 
-# I had to define two seperate functions for looking through folders. When I tried
-# doing this with just the one function, the program lost it's mind.
+def find_files_to_remove(path_list):
+    for paths in path_list:
+        for root, dirs, files in os.walk(paths):
+		    for filename in files:
+		       	for f_type in file_types:
+					if filename.lower().endswith(f_type):
+				    	marked_files.append(os.path.join(root,filename))
+				if "sample" in filename:
+			        if os.path.getsize(os.path.join(root,filename)) > file_size_in_MB * mbs_in_bytes
+			       	marked_files.append(os.path.join(root,filename))
 
-def find_files_to_remove(path):
-	for p in paths:
-		for i in os.listdir(p):
-			if os.path.isdir(p + i) is False:
-				check_file()
-			else:
-				search_subfolders(p + i + "\\")
+# Copy files:
 
-def search_subfolders(folder):
-	for i in os.listdir(folder):
-			if os.path.isdir(folder + i) is False:
-				check_file()
-			else:
-				search_subfolders(folder + i + "\\")
+for marked_file in marked_files:
+	shutil.copy2(marked_file, move_files_to_destination)
 
-# ---------------------------------------------
-# SIIIIIIIIIIGH!! practice with os.walk()
-# ---------------------------------------------
-# import os
-# for root, dirs, files in os.walk("/mydir"):
-#     for file in files:
-#         if file.endswith(".txt"):
-#              print(os.path.join(root, file))
-# ---------------------------------------------
-
-def check_file(file):
-	if i.lower().endswith('.nfo'):
-		# MARK THAT BITCH FOR REMOVAL
-		pass
-	elif "sample" in i
-	
+# Move files:
+def function(self):
+	pass

@@ -1,45 +1,51 @@
 import os
+import config.settings as conf
 
-# for i in os.listdir('C:\\Users\\III\\Desktop\\Coding Lessons\\4Kids'):
-#     print(i)
-#     print(os.path.isdir('C:\\Users\\III\\Desktop\\Coding Lessons\\4Kids\\' + i))
 
-paths = ['C:\\Users\\III\\Desktop\\Coding Lessons\\']
+def walk_folder(filepath):
+    marked_files = []
+    sample_files = []
 
-def print_bitch():
-    print("TODAY, You're MY BITCH!")
+    for root, dirs, files in os.walk(filepath):
+        for filename in files:
+            try:
+                for file_type in conf.FILE_TYPES_TO_PROCESS:
+                    file_extension = filename.split('.')[-1:][0]
+                    if file_extension == file_type and "sample" not in filename.lower():
+                        marked_files.append(os.path.join(root,filename))
 
-#for p in paths:
-#    for i in os.listdir(p):
-#        print(i)
-#        if os.path.isdir(p + i) is True:
-#            print("I AM A FILE!!!! HEAR ME DO NOTHING")
-#        else:
-#            print("NOOOOOOOOOOOOOOOOOOOOOOOOOO!")
+                if "sample" in filename:
+                  sample_files.append(os.path.join(root,filename))
+            except TypeError:
+                pass
 
-#for p in paths:
-#    for i in os.listdir(p):
-#        if os.path.isdir(p + i) is False:
-#            print_bitch()
-#        else:
-#            print("I'm not your BITCH TODAY BEYOTCH!")
+    return (marked_files, sample_files)
 
-def find_files(path):
-    for p in paths:
-        for i in os.listdir(p):
-            if os.path.isdir(p + i) is False:
-                print(p + "\\" + i)
-#                print_bitch()
-            else:
-                files(p + i + "\\")
+def process_samples(samples):
+    samples_to_return = []
 
-def files(folder):
-#    print(folder)
-    for i in os.listdir(folder):
-        if os.path.isdir(folder + i) is False:
-#            if i.lower().endswith('.py'):
-#                print(folder + i)
-            if ".py" in i:
-                print(folder + i)
-        else:
-            files(folder + i + "\\")
+    for sample in samples:
+        if os.path.getsize(sample) > conf.FILE_SIZE_IN_MB * conf.MBS_IN_BYTES:
+            samples_to_return.append(sample)
+
+    return samples_to_return
+
+def copy_file(source, destination):
+    # shutil.copy2(marked_file, move_files_to_destination)
+    pass
+
+def move_file(source, destination):
+    pass
+
+def find_files_to_action():
+    filenames_to_action = []
+
+    for paths in conf.PATH_LIST:
+        non_samples, sample = walk_folder(paths)
+        processed_samples = process_samples(sample)
+        filenames_to_action.append(non_samples + processed_samples)
+
+    return filenames_to_action
+
+if __name__ == '__main__':
+    filename_list = find_files_to_action()
